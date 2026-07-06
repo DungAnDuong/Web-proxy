@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<assembly manifestVersion="1.0" xmlns="urn:schemas-microsoft-com:asm.v1">
-  <assemblyIdentity version="1.0.0.0" name="WebServerManagement.UI.app" type="win32" />
+<asmv1:assembly manifestVersion="1.0" xmlns="urn:schemas-microsoft-com:asm.v1" xmlns:asmv1="urn:schemas-microsoft-com:asm.v1" xmlns:asmv2="urn:schemas-microsoft-com:asm.v2" xmlns:asmv3="urn:schemas-microsoft-com:asm.v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <assemblyIdentity version="1.0.0.0" name="WebServerManagement.UI.app"/>
   <trustInfo xmlns="urn:schemas-microsoft-com:asm.v2">
     <security>
       <requestedPrivileges xmlns="urn:schemas-microsoft-com:asm.v3">
         <!--
           asInvoker by default: most of this app's actions (starting Node processes, writing to
           its own Data/Logs folders) do not need elevation. Binding Caddy to port 443 for
-          production use typically does -- launch the app "as Administrator" for that scenario
+          production use typically does; launch the app "as Administrator" for that scenario
           (see README) rather than forcing elevation on every user unconditionally.
         -->
         <requestedExecutionLevel level="asInvoker" uiAccess="false" />
@@ -20,4 +20,4 @@
       <supportedOS Id="{8e0f7a12-bfb3-4fe8-b9a5-48fd50a15a9a}" />
     </application>
   </compatibility>
-</assembly>
+</asmv1:assembly>

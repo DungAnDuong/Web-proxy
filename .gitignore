@@ -1,2 +1,12 @@
 .copilot-specs-cache/
 .claude
+
+# .NET build output
+[Bb]in/
+[Oo]bj/
+.vs/
+*.user
+*.suo
+
+# Caddy binary is downloaded separately, not committed
+Tools/caddy/*.exe

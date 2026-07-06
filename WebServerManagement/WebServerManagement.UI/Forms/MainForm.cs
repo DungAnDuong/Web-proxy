@@ -443,19 +443,28 @@ namespace WebServerManagement.UI.Forms
 
         private void ReloadReverseProxy()
         {
-            if (!_reverseProxyManager.IsRunning)
+            // ApplyConfiguration writes the Caddyfile, validates it, and starts/reloads Caddy as
+            // needed on its own -- it never throws even when Caddy isn't configured yet (a normal
+            // first-run state), so this must not be allowed to interrupt MainForm_Load either.
+            try
             {
-                _reverseProxyManager.Start();
+                var enabledConfigs = _rows?.Select(r => r.Config) ?? _websiteRepository.GetAll();
+                var result = _reverseProxyManager.ApplyConfiguration(enabledConfigs);
+
+                if (!result.Success)
+                {
+                    _appLogger.Warn($"Reverse proxy configuration was not applied: {result.Message}");
+                    MessageBox.Show(this, result.Message, "Reverse Proxy Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
-
-            var enabledConfigs = _rows?.Select(r => r.Config) ?? _websiteRepository.GetAll();
-            var result = _reverseProxyManager.ApplyConfiguration(enabledConfigs);
-
-            UpdateStatusBar();
-
-            if (!result.Success)
+            catch (Exception ex)
             {
-                MessageBox.Show(this, result.Message, "Reverse Proxy Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                _appLogger.Error("Unexpected error while reloading the reverse proxy.", ex);
+                MessageBox.Show(this, ex.Message, "Reverse Proxy Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                UpdateStatusBar();
             }
         }
 

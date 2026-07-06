@@ -42,7 +42,17 @@ namespace WebServerManagement.Infrastructure.ReverseProxy
                 File.WriteAllText(caddyfilePath, CaddyfileBuilder.Build(Enumerable.Empty<WebsiteConfig>()));
             }
 
-            _supervisor.Start(settings.CaddyExecutablePath, caddyfilePath);
+            try
+            {
+                _supervisor.Start(settings.CaddyExecutablePath, caddyfilePath);
+            }
+            catch (Exception ex)
+            {
+                // Caddy not being configured yet is an expected first-run state, not a fatal
+                // error -- log it and leave the proxy stopped rather than throwing out of a
+                // startup/auto-start code path.
+                _appLogger.Warn($"Reverse proxy did not start: {ex.Message}");
+            }
         }
 
         public void Stop() => _supervisor.Stop();
