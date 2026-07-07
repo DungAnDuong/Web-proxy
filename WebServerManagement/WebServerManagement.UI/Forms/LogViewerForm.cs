@@ -21,6 +21,7 @@ namespace WebServerManagement.UI.Forms
             Width = 900;
             Height = 600;
             StartPosition = FormStartPosition.CenterParent;
+            Icon = ApplicationIconProvider.Icon;
 
             _textBox = new TextBox
             {
@@ -39,6 +40,7 @@ namespace WebServerManagement.UI.Forms
             Load += (s, e) =>
             {
                 if (darkMode) DarkTheme.Apply(this);
+                else LightTheme.Apply(this);
                 RefreshContent(fullReload: true);
                 _pollTimer.Start();
             };

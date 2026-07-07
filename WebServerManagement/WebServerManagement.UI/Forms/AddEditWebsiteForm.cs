@@ -1,8 +1,11 @@
 using System;
+using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 using WebServerManagement.Core.Domain;
 using WebServerManagement.Core.Enums;
 using WebServerManagement.Core.Validation;
+using WebServerManagement.UI.Theming;
 
 namespace WebServerManagement.UI.Forms
 {
@@ -32,7 +35,7 @@ namespace WebServerManagement.UI.Forms
 
         public WebsiteConfig Result { get; private set; }
 
-        public AddEditWebsiteForm(WebsiteValidator validator, WebsiteConfig existing = null)
+        public AddEditWebsiteForm(WebsiteValidator validator, WebsiteConfig existing = null, bool darkMode = false)
         {
             _validator = validator ?? throw new ArgumentNullException(nameof(validator));
             _original = existing;
@@ -43,7 +46,16 @@ namespace WebServerManagement.UI.Forms
             {
                 _chkEnabled.Checked = true;
                 _cboEnvironment.SelectedItem = EnvironmentMode.Production;
+                _numPort.Value = Math.Max(_numPort.Minimum, Math.Min(_numPort.Maximum, (decimal)_validator.SuggestAvailablePort()));
+                _txtCommand.Text = "npm";
+                _txtArguments.Text = "start";
+
+                var detectedNode = DetectNodeExecutable();
+                if (!string.IsNullOrEmpty(detectedNode)) _txtNodeExecutable.Text = detectedNode;
             }
+
+            if (darkMode) DarkTheme.Apply(this);
+            else LightTheme.Apply(this);
         }
 
         private void BuildLayout()
@@ -51,6 +63,7 @@ namespace WebServerManagement.UI.Forms
             Text = _original == null ? "Add Website" : "Edit Website";
             Width = 640;
             Height = 640;
+            Icon = ApplicationIconProvider.Icon;
             FormBorderStyle = FormBorderStyle.FixedDialog;
             StartPosition = FormStartPosition.CenterParent;
             MaximizeBox = false;
@@ -69,7 +82,8 @@ namespace WebServerManagement.UI.Forms
 
             AddLabel(layout, "Source Folder", row);
             _txtSourceFolder = AddTextBox(layout, row);
-            var btnBrowseSource = new Button { Text = "Browse...", Dock = DockStyle.Fill };
+            _txtSourceFolder.TextChanged += (s, e) => SyncWorkingDirectoryWithSource();
+            var btnBrowseSource = NewBrowseButton();
             btnBrowseSource.Click += (s, e) => BrowseFolder(_txtSourceFolder);
             layout.Controls.Add(btnBrowseSource, 2, row);
             row++;
@@ -85,14 +99,14 @@ namespace WebServerManagement.UI.Forms
 
             AddLabel(layout, "Node Executable", row);
             _txtNodeExecutable = AddTextBox(layout, row);
-            var btnBrowseNode = new Button { Text = "Browse...", Dock = DockStyle.Fill };
+            var btnBrowseNode = NewBrowseButton();
             btnBrowseNode.Click += (s, e) => BrowseFile(_txtNodeExecutable, "node.exe|node.exe|Executable files (*.exe)|*.exe");
             layout.Controls.Add(btnBrowseNode, 2, row);
             row++;
 
             AddLabel(layout, "Working Directory", row);
             _txtWorkingDirectory = AddTextBox(layout, row);
-            var btnBrowseWorkDir = new Button { Text = "Browse...", Dock = DockStyle.Fill };
+            var btnBrowseWorkDir = NewBrowseButton();
             btnBrowseWorkDir.Click += (s, e) => BrowseFolder(_txtWorkingDirectory);
             layout.Controls.Add(btnBrowseWorkDir, 2, row);
             row++;
@@ -126,14 +140,14 @@ namespace WebServerManagement.UI.Forms
 
             AddLabel(layout, "Certificate Path", row);
             _txtCertPath = AddTextBox(layout, row);
-            _btnBrowseCert = new Button { Text = "Browse...", Dock = DockStyle.Fill };
+            _btnBrowseCert = NewBrowseButton();
             _btnBrowseCert.Click += (s, e) => BrowseFile(_txtCertPath, "Certificate files (*.crt;*.pem;*.cer)|*.crt;*.pem;*.cer|All files (*.*)|*.*");
             layout.Controls.Add(_btnBrowseCert, 2, row);
             row++;
 
             AddLabel(layout, "Key Path", row);
             _txtKeyPath = AddTextBox(layout, row);
-            _btnBrowseKey = new Button { Text = "Browse...", Dock = DockStyle.Fill };
+            _btnBrowseKey = NewBrowseButton();
             _btnBrowseKey.Click += (s, e) => BrowseFile(_txtKeyPath, "Key files (*.key;*.pem)|*.key;*.pem|All files (*.*)|*.*");
             layout.Controls.Add(_btnBrowseKey, 2, row);
             row++;
@@ -145,8 +159,25 @@ namespace WebServerManagement.UI.Forms
             row++;
 
             var buttonPanel = new FlowLayoutPanel { Dock = DockStyle.Bottom, FlowDirection = FlowDirection.RightToLeft, Height = 46 };
-            var btnCancel = new Button { Text = "Cancel", DialogResult = DialogResult.Cancel, Width = 90 };
-            var btnSave = new Button { Text = "Save", Width = 90 };
+            var btnCancel = new Button
+            {
+                Text = "Cancel",
+                DialogResult = DialogResult.Cancel,
+                Width = 100,
+                Image = IconFactory.Get(AppIcon.Cancel),
+                TextImageRelation = TextImageRelation.ImageBeforeText,
+                ImageAlign = ContentAlignment.MiddleLeft,
+                TextAlign = ContentAlignment.MiddleRight
+            };
+            var btnSave = new Button
+            {
+                Text = "Save",
+                Width = 100,
+                Image = IconFactory.Get(AppIcon.Save),
+                TextImageRelation = TextImageRelation.ImageBeforeText,
+                ImageAlign = ContentAlignment.MiddleLeft,
+                TextAlign = ContentAlignment.MiddleRight
+            };
             btnSave.Click += (s, e) => Validate_AndSave();
             buttonPanel.Controls.Add(btnCancel);
             buttonPanel.Controls.Add(btnSave);
@@ -179,6 +210,47 @@ namespace WebServerManagement.UI.Forms
             layout.Controls.Add(textBox, 1, row);
             if (span > 1) layout.SetColumnSpan(textBox, span);
             return textBox;
+        }
+
+        private static Button NewBrowseButton()
+        {
+            return new Button
+            {
+                Text = "Browse...",
+                Dock = DockStyle.Fill,
+                Image = IconFactory.Get(AppIcon.Folder),
+                TextImageRelation = TextImageRelation.ImageBeforeText,
+                ImageAlign = ContentAlignment.MiddleLeft,
+                TextAlign = ContentAlignment.MiddleCenter,
+                Padding = new Padding(4, 0, 0, 0)
+            };
+        }
+
+        private void SyncWorkingDirectoryWithSource()
+        {
+            if (string.IsNullOrWhiteSpace(_txtWorkingDirectory.Text))
+            {
+                _txtWorkingDirectory.Text = _txtSourceFolder.Text;
+            }
+        }
+
+        private static string DetectNodeExecutable()
+        {
+            var pathEnv = Environment.GetEnvironmentVariable("PATH") ?? string.Empty;
+            foreach (var dir in pathEnv.Split(Path.PathSeparator))
+            {
+                if (string.IsNullOrWhiteSpace(dir)) continue;
+                try
+                {
+                    var candidate = Path.Combine(dir.Trim(), "node.exe");
+                    if (File.Exists(candidate)) return candidate;
+                }
+                catch (ArgumentException)
+                {
+                    // Malformed PATH segment (stray quotes/invalid chars) -- skip it.
+                }
+            }
+            return null;
         }
 
         private void BrowseFolder(TextBox target)

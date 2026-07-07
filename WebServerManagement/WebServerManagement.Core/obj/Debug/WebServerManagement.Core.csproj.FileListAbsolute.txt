@@ -1,6 +1,6 @@
 J:\Project\Web proxy\WebServerManagement\WebServerManagement.Core\bin\Debug\WebServerManagement.Core.dll
 J:\Project\Web proxy\WebServerManagement\WebServerManagement.Core\bin\Debug\WebServerManagement.Core.pdb
-J:\Project\Web proxy\WebServerManagement\WebServerManagement.Core\obj\Debug\WebServerManagement.Core.csprojAssemblyReference.cache
 J:\Project\Web proxy\WebServerManagement\WebServerManagement.Core\obj\Debug\WebServerManagement.Core.csproj.CoreCompileInputs.cache
 J:\Project\Web proxy\WebServerManagement\WebServerManagement.Core\obj\Debug\WebServerManagement.Core.dll
 J:\Project\Web proxy\WebServerManagement\WebServerManagement.Core\obj\Debug\WebServerManagement.Core.pdb
+J:\Project\Web proxy\WebServerManagement\WebServerManagement.Core\obj\Debug\WebServerManagement.Core.csproj.AssemblyReference.cache

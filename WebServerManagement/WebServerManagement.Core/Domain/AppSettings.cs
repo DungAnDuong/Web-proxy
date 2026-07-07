@@ -19,6 +19,6 @@ namespace WebServerManagement.Core.Domain
 
         public int LogRetentionDays { get; set; } = 30;
 
-        public bool DarkMode { get; set; } = true;
+        public bool DarkMode { get; set; }
     }
 }

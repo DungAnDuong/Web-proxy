@@ -1,4 +1,3 @@
-J:\Project\Web proxy\WebServerManagement\WebServerManagement.UI\obj\Debug\WebServerManagement.UI.csprojAssemblyReference.cache
 J:\Project\Web proxy\WebServerManagement\WebServerManagement.UI\obj\Debug\WebServerManagement.UI.csproj.CoreCompileInputs.cache
 J:\Project\Web proxy\WebServerManagement\WebServerManagement.UI\bin\Debug\WebServerManagement.UI.exe.config
 J:\Project\Web proxy\WebServerManagement\WebServerManagement.UI\bin\Debug\WebServerManagement.UI.exe
@@ -9,6 +8,8 @@ J:\Project\Web proxy\WebServerManagement\WebServerManagement.UI\bin\Debug\WebSer
 J:\Project\Web proxy\WebServerManagement\WebServerManagement.UI\bin\Debug\WebServerManagement.Infrastructure.dll
 J:\Project\Web proxy\WebServerManagement\WebServerManagement.UI\bin\Debug\WebServerManagement.Core.pdb
 J:\Project\Web proxy\WebServerManagement\WebServerManagement.UI\bin\Debug\WebServerManagement.Infrastructure.pdb
-J:\Project\Web proxy\WebServerManagement\WebServerManagement.UI\obj\Debug\WebServerManagement.UI.csproj.CopyComplete
 J:\Project\Web proxy\WebServerManagement\WebServerManagement.UI\obj\Debug\WebServerManagement.UI.exe
 J:\Project\Web proxy\WebServerManagement\WebServerManagement.UI\obj\Debug\WebServerManagement.UI.pdb
+J:\Project\Web proxy\WebServerManagement\WebServerManagement.UI\obj\Debug\WebServerManagement.UI.csproj.AssemblyReference.cache
+J:\Project\Web proxy\WebServerManagement\WebServerManagement.UI\obj\Debug\WebServerManagement.UI.exe.config
+J:\Project\Web proxy\WebServerManagement\WebServerManagement.UI\obj\Debug\WebServe.BC98F549.Up2Date

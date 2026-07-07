@@ -1,4 +1,5 @@
 using System;
+using System.Drawing;
 using System.Windows.Forms;
 using WebServerManagement.Core.Domain;
 using WebServerManagement.Core.Interfaces;
@@ -28,6 +29,9 @@ namespace WebServerManagement.UI.Forms
 
             BuildLayout();
             LoadValues();
+
+            if (_settingsRepository.Get().DarkMode) DarkTheme.Apply(this);
+            else LightTheme.Apply(this);
         }
 
         private void BuildLayout()
@@ -35,6 +39,7 @@ namespace WebServerManagement.UI.Forms
             Text = "Settings";
             Width = 560;
             Height = 400;
+            Icon = ApplicationIconProvider.Icon;
             FormBorderStyle = FormBorderStyle.FixedDialog;
             StartPosition = FormStartPosition.CenterParent;
             MaximizeBox = false;
@@ -50,7 +55,7 @@ namespace WebServerManagement.UI.Forms
             layout.Controls.Add(new Label { Text = "Caddy Executable Path", AutoSize = true, Anchor = AnchorStyles.Left }, 0, row);
             _txtCaddyPath = new TextBox { Dock = DockStyle.Fill };
             layout.Controls.Add(_txtCaddyPath, 1, row);
-            var btnBrowseCaddy = new Button { Text = "Browse...", Dock = DockStyle.Fill };
+            var btnBrowseCaddy = NewBrowseButton();
             btnBrowseCaddy.Click += (s, e) => BrowseForCaddyExe();
             layout.Controls.Add(btnBrowseCaddy, 2, row);
             row++;
@@ -58,7 +63,7 @@ namespace WebServerManagement.UI.Forms
             layout.Controls.Add(new Label { Text = "Caddy Config Folder", AutoSize = true, Anchor = AnchorStyles.Left }, 0, row);
             _txtCaddyConfigFolder = new TextBox { Dock = DockStyle.Fill };
             layout.Controls.Add(_txtCaddyConfigFolder, 1, row);
-            var btnBrowseFolder = new Button { Text = "Browse...", Dock = DockStyle.Fill };
+            var btnBrowseFolder = NewBrowseButton();
             btnBrowseFolder.Click += (s, e) => BrowseForConfigFolder();
             layout.Controls.Add(btnBrowseFolder, 2, row);
             row++;
@@ -85,8 +90,26 @@ namespace WebServerManagement.UI.Forms
             row++;
 
             var buttonPanel = new FlowLayoutPanel { Dock = DockStyle.Bottom, FlowDirection = FlowDirection.RightToLeft, Height = 46 };
-            var btnCancel = new Button { Text = "Cancel", DialogResult = DialogResult.Cancel, Width = 90 };
-            var btnSave = new Button { Text = "Save", DialogResult = DialogResult.OK, Width = 90 };
+            var btnCancel = new Button
+            {
+                Text = "Cancel",
+                DialogResult = DialogResult.Cancel,
+                Width = 100,
+                Image = IconFactory.Get(AppIcon.Cancel),
+                TextImageRelation = TextImageRelation.ImageBeforeText,
+                ImageAlign = ContentAlignment.MiddleLeft,
+                TextAlign = ContentAlignment.MiddleRight
+            };
+            var btnSave = new Button
+            {
+                Text = "Save",
+                DialogResult = DialogResult.OK,
+                Width = 100,
+                Image = IconFactory.Get(AppIcon.Save),
+                TextImageRelation = TextImageRelation.ImageBeforeText,
+                ImageAlign = ContentAlignment.MiddleLeft,
+                TextAlign = ContentAlignment.MiddleRight
+            };
             btnSave.Click += (s, e) => SaveAndClose();
             buttonPanel.Controls.Add(btnCancel);
             buttonPanel.Controls.Add(btnSave);
@@ -107,6 +130,20 @@ namespace WebServerManagement.UI.Forms
             _chkAutoStartWebsites.Checked = settings.AutoStartWebsitesOnLaunch;
             _chkAutoStartProxy.Checked = settings.AutoStartReverseProxyOnLaunch;
             _chkDarkMode.Checked = settings.DarkMode;
+        }
+
+        private static Button NewBrowseButton()
+        {
+            return new Button
+            {
+                Text = "Browse...",
+                Dock = DockStyle.Fill,
+                Image = IconFactory.Get(AppIcon.Folder),
+                TextImageRelation = TextImageRelation.ImageBeforeText,
+                ImageAlign = ContentAlignment.MiddleLeft,
+                TextAlign = ContentAlignment.MiddleCenter,
+                Padding = new Padding(4, 0, 0, 0)
+            };
         }
 
         private void BrowseForCaddyExe()

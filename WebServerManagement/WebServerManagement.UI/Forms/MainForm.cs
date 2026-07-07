@@ -90,6 +90,7 @@ namespace WebServerManagement.UI.Forms
             Width = 1400;
             Height = 800;
             StartPosition = FormStartPosition.CenterScreen;
+            Icon = ApplicationIconProvider.Icon;
 
             var menuStrip = BuildMenuStrip();
             var toolStrip = BuildToolStrip();
@@ -106,7 +107,7 @@ namespace WebServerManagement.UI.Forms
 
             _notifyIcon = new NotifyIcon
             {
-                Icon = SystemIcons.Application,
+                Icon = ApplicationIconProvider.Icon,
                 Text = "Web Server Manager",
                 Visible = true,
                 ContextMenuStrip = BuildTrayMenu()
@@ -119,19 +120,19 @@ namespace WebServerManagement.UI.Forms
 
         private MenuStrip BuildMenuStrip()
         {
-            var menu = new MenuStrip();
+            var menu = new MenuStrip { ImageScalingSize = new Size(18, 18) };
 
             var fileMenu = new ToolStripMenuItem("&File");
-            fileMenu.DropDownItems.Add("Import...", null, (s, e) => ImportConfig());
-            fileMenu.DropDownItems.Add("Export...", null, (s, e) => ExportConfig());
+            fileMenu.DropDownItems.Add("Import...", IconFactory.Get(AppIcon.Import), (s, e) => ImportConfig());
+            fileMenu.DropDownItems.Add("Export...", IconFactory.Get(AppIcon.Export), (s, e) => ExportConfig());
             fileMenu.DropDownItems.Add(new ToolStripSeparator());
-            fileMenu.DropDownItems.Add("Exit", null, (s, e) => { _isExiting = true; Close(); });
+            fileMenu.DropDownItems.Add("Exit", IconFactory.Get(AppIcon.Exit), (s, e) => { _isExiting = true; Close(); });
 
             var proxyMenu = new ToolStripMenuItem("&Reverse Proxy");
-            proxyMenu.DropDownItems.Add("Reload Reverse Proxy", null, (s, e) => ReloadReverseProxy());
+            proxyMenu.DropDownItems.Add("Reload Reverse Proxy", IconFactory.Get(AppIcon.Reload), (s, e) => ReloadReverseProxy());
 
             var toolsMenu = new ToolStripMenuItem("&Tools");
-            toolsMenu.DropDownItems.Add("Settings...", null, (s, e) => OpenSettings());
+            toolsMenu.DropDownItems.Add("Settings...", IconFactory.Get(AppIcon.Settings), (s, e) => OpenSettings());
 
             menu.Items.Add(fileMenu);
             menu.Items.Add(proxyMenu);
@@ -141,57 +142,67 @@ namespace WebServerManagement.UI.Forms
 
         private ToolStrip BuildToolStrip()
         {
-            var toolStrip = new ToolStrip { GripStyle = ToolStripGripStyle.Hidden };
-            toolStrip.Items.Add(NewButton("Add Website", (s, e) => AddWebsite()));
-            toolStrip.Items.Add(NewButton("Edit", (s, e) => EditSelectedWebsite()));
-            toolStrip.Items.Add(NewButton("Delete", (s, e) => DeleteSelectedWebsite()));
+            var toolStrip = new ToolStrip
+            {
+                GripStyle = ToolStripGripStyle.Hidden,
+                ImageScalingSize = new Size(20, 20),
+                Padding = new Padding(4, 2, 4, 2)
+            };
+            toolStrip.Items.Add(NewButton("Add Website", AppIcon.Add, (s, e) => AddWebsite()));
+            toolStrip.Items.Add(NewButton("Edit", AppIcon.Edit, (s, e) => EditSelectedWebsite()));
+            toolStrip.Items.Add(NewButton("Delete", AppIcon.Delete, (s, e) => DeleteSelectedWebsite()));
             toolStrip.Items.Add(new ToolStripSeparator());
-            toolStrip.Items.Add(NewButton("Start", (s, e) => StartSelectedWebsite()));
-            toolStrip.Items.Add(NewButton("Stop", (s, e) => StopSelectedWebsite()));
-            toolStrip.Items.Add(NewButton("Pause", (s, e) => PauseSelectedWebsite()));
-            toolStrip.Items.Add(NewButton("Restart", (s, e) => RestartSelectedWebsite()));
+            toolStrip.Items.Add(NewButton("Start", AppIcon.Start, (s, e) => StartSelectedWebsite()));
+            toolStrip.Items.Add(NewButton("Stop", AppIcon.Stop, (s, e) => StopSelectedWebsite()));
+            toolStrip.Items.Add(NewButton("Pause", AppIcon.Pause, (s, e) => PauseSelectedWebsite()));
+            toolStrip.Items.Add(NewButton("Restart", AppIcon.Restart, (s, e) => RestartSelectedWebsite()));
             toolStrip.Items.Add(new ToolStripSeparator());
-            toolStrip.Items.Add(NewButton("Open Folder", (s, e) => OpenSelectedFolder()));
-            toolStrip.Items.Add(NewButton("Open Browser", (s, e) => OpenSelectedInBrowser()));
-            toolStrip.Items.Add(NewButton("Open Log", (s, e) => OpenSelectedLog()));
+            toolStrip.Items.Add(NewButton("Open Folder", AppIcon.Folder, (s, e) => OpenSelectedFolder()));
+            toolStrip.Items.Add(NewButton("Open Browser", AppIcon.Browser, (s, e) => OpenSelectedInBrowser()));
+            toolStrip.Items.Add(NewButton("Open Log", AppIcon.Log, (s, e) => OpenSelectedLog()));
             toolStrip.Items.Add(new ToolStripSeparator());
-            toolStrip.Items.Add(NewButton("Reload Reverse Proxy", (s, e) => ReloadReverseProxy()));
-            toolStrip.Items.Add(NewButton("Save Config", (s, e) => SaveAllConfig()));
-            toolStrip.Items.Add(NewButton("Import", (s, e) => ImportConfig()));
-            toolStrip.Items.Add(NewButton("Export", (s, e) => ExportConfig()));
+            toolStrip.Items.Add(NewButton("Reload Reverse Proxy", AppIcon.Reload, (s, e) => ReloadReverseProxy()));
+            toolStrip.Items.Add(NewButton("Save Config", AppIcon.Save, (s, e) => SaveAllConfig()));
+            toolStrip.Items.Add(NewButton("Import", AppIcon.Import, (s, e) => ImportConfig()));
+            toolStrip.Items.Add(NewButton("Export", AppIcon.Export, (s, e) => ExportConfig()));
             return toolStrip;
         }
 
-        private static ToolStripButton NewButton(string text, EventHandler onClick)
+        private static ToolStripButton NewButton(string text, AppIcon icon, EventHandler onClick)
         {
-            var button = new ToolStripButton(text) { DisplayStyle = ToolStripItemDisplayStyle.Text };
+            var button = new ToolStripButton(text, IconFactory.Get(icon))
+            {
+                DisplayStyle = ToolStripItemDisplayStyle.ImageAndText,
+                TextImageRelation = TextImageRelation.ImageBeforeText,
+                ImageAlign = ContentAlignment.MiddleCenter
+            };
             button.Click += onClick;
             return button;
         }
 
         private ContextMenuStrip BuildContextMenu()
         {
-            var menu = new ContextMenuStrip();
-            menu.Items.Add("Start", null, (s, e) => StartSelectedWebsite());
-            menu.Items.Add("Stop", null, (s, e) => StopSelectedWebsite());
-            menu.Items.Add("Pause", null, (s, e) => PauseSelectedWebsite());
-            menu.Items.Add("Restart", null, (s, e) => RestartSelectedWebsite());
+            var menu = new ContextMenuStrip { ImageScalingSize = new Size(18, 18) };
+            menu.Items.Add("Start", IconFactory.Get(AppIcon.Start), (s, e) => StartSelectedWebsite());
+            menu.Items.Add("Stop", IconFactory.Get(AppIcon.Stop), (s, e) => StopSelectedWebsite());
+            menu.Items.Add("Pause", IconFactory.Get(AppIcon.Pause), (s, e) => PauseSelectedWebsite());
+            menu.Items.Add("Restart", IconFactory.Get(AppIcon.Restart), (s, e) => RestartSelectedWebsite());
             menu.Items.Add(new ToolStripSeparator());
-            menu.Items.Add("Edit", null, (s, e) => EditSelectedWebsite());
-            menu.Items.Add("Delete", null, (s, e) => DeleteSelectedWebsite());
+            menu.Items.Add("Edit", IconFactory.Get(AppIcon.Edit), (s, e) => EditSelectedWebsite());
+            menu.Items.Add("Delete", IconFactory.Get(AppIcon.Delete), (s, e) => DeleteSelectedWebsite());
             menu.Items.Add(new ToolStripSeparator());
-            menu.Items.Add("Open Folder", null, (s, e) => OpenSelectedFolder());
-            menu.Items.Add("Open Browser", null, (s, e) => OpenSelectedInBrowser());
-            menu.Items.Add("Open Log", null, (s, e) => OpenSelectedLog());
+            menu.Items.Add("Open Folder", IconFactory.Get(AppIcon.Folder), (s, e) => OpenSelectedFolder());
+            menu.Items.Add("Open Browser", IconFactory.Get(AppIcon.Browser), (s, e) => OpenSelectedInBrowser());
+            menu.Items.Add("Open Log", IconFactory.Get(AppIcon.Log), (s, e) => OpenSelectedLog());
             return menu;
         }
 
         private ContextMenuStrip BuildTrayMenu()
         {
-            var menu = new ContextMenuStrip();
-            menu.Items.Add("Open", null, (s, e) => RestoreFromTray());
+            var menu = new ContextMenuStrip { ImageScalingSize = new Size(18, 18) };
+            menu.Items.Add("Open", IconFactory.Get(AppIcon.Restore), (s, e) => RestoreFromTray());
             menu.Items.Add(new ToolStripSeparator());
-            menu.Items.Add("Exit", null, (s, e) => { _isExiting = true; Close(); });
+            menu.Items.Add("Exit", IconFactory.Get(AppIcon.Exit), (s, e) => { _isExiting = true; Close(); });
             return menu;
         }
 
@@ -247,12 +258,20 @@ namespace WebServerManagement.UI.Forms
         {
             var settings = _settingsRepository.Get();
             if (settings.DarkMode) DarkTheme.Apply(this);
+            else LightTheme.Apply(this);
 
             LoadWebsitesFromRepository();
 
             if (settings.AutoStartReverseProxyOnLaunch)
             {
-                ReloadReverseProxy();
+                if (string.IsNullOrWhiteSpace(settings.CaddyExecutablePath))
+                {
+                    _appLogger.Warn("Reverse proxy auto-start skipped: Caddy executable path is not configured yet (set it under Tools > Settings).");
+                }
+                else
+                {
+                    ReloadReverseProxy();
+                }
             }
 
             if (settings.AutoStartWebsitesOnLaunch)
@@ -314,7 +333,7 @@ namespace WebServerManagement.UI.Forms
 
         private void AddWebsite()
         {
-            using (var form = new AddEditWebsiteForm(_validator))
+            using (var form = new AddEditWebsiteForm(_validator, darkMode: _settingsRepository.Get().DarkMode))
             {
                 if (form.ShowDialog(this) != DialogResult.OK) return;
 
@@ -330,7 +349,7 @@ namespace WebServerManagement.UI.Forms
             var row = GetSelectedRow();
             if (row == null) return;
 
-            using (var form = new AddEditWebsiteForm(_validator, row.Config))
+            using (var form = new AddEditWebsiteForm(_validator, row.Config, _settingsRepository.Get().DarkMode))
             {
                 if (form.ShowDialog(this) != DialogResult.OK) return;
 

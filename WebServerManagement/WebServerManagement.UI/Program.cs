@@ -24,6 +24,42 @@ namespace WebServerManagement.UI
     {
         private static Mutex _singleInstanceMutex;
 
+        /// <summary>Looks for caddy.exe on PATH first, then a few conventional install locations,
+        /// so a fresh install works out of the box when Caddy is already on the machine instead of
+        /// surfacing "Caddy executable not found" until the user manually browses to it in Settings.</summary>
+        private static string DetectCaddyExecutable()
+        {
+            var pathEnv = Environment.GetEnvironmentVariable("PATH") ?? string.Empty;
+            foreach (var dir in pathEnv.Split(Path.PathSeparator))
+            {
+                if (string.IsNullOrWhiteSpace(dir)) continue;
+                try
+                {
+                    var candidate = Path.Combine(dir.Trim(), "caddy.exe");
+                    if (File.Exists(candidate)) return candidate;
+                }
+                catch (ArgumentException)
+                {
+                    // Malformed PATH segment (stray quotes/invalid chars) -- skip it.
+                }
+            }
+
+            var wellKnownPaths = new[]
+            {
+                @"C:\caddy\caddy.exe",
+                @"C:\Program Files\Caddy\caddy.exe",
+                @"C:\ProgramData\chocolatey\bin\caddy.exe",
+                @"C:\tools\caddy\caddy.exe"
+            };
+
+            foreach (var candidate in wellKnownPaths)
+            {
+                if (File.Exists(candidate)) return candidate;
+            }
+
+            return null;
+        }
+
         [STAThread]
         private static void Main()
         {
@@ -56,9 +92,25 @@ namespace WebServerManagement.UI
             ISettingsRepository settingsRepository = new LiteDbSettingsRepository(dbContext);
 
             var settings = settingsRepository.Get();
+            var settingsChanged = false;
             if (string.IsNullOrWhiteSpace(settings.CaddyConfigFolder))
             {
                 settings.CaddyConfigFolder = proxyConfigFolder;
+                settingsChanged = true;
+            }
+
+            if (string.IsNullOrWhiteSpace(settings.CaddyExecutablePath))
+            {
+                var detectedCaddy = DetectCaddyExecutable();
+                if (detectedCaddy != null)
+                {
+                    settings.CaddyExecutablePath = detectedCaddy;
+                    settingsChanged = true;
+                }
+            }
+
+            if (settingsChanged)
+            {
                 settingsRepository.Save(settings);
             }
 

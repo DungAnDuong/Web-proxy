@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using WebServerManagement.Core.Domain;
@@ -29,6 +30,23 @@ namespace WebServerManagement.Core.Validation
         {
             _repository = repository ?? throw new ArgumentNullException(nameof(repository));
             _portChecker = portChecker ?? throw new ArgumentNullException(nameof(portChecker));
+        }
+
+        /// <summary>Finds the first port at or above <paramref name="startFrom"/> that is free both in the
+        /// saved configuration and on the OS, so the Add Website dialog can pre-fill a usable value
+        /// instead of always defaulting to the same port for every new site.</summary>
+        public int SuggestAvailablePort(int startFrom = 3000)
+        {
+            var usedPorts = new HashSet<int>(_repository.GetAll().Select(w => w.InternalPort));
+
+            for (var port = startFrom; port <= MaxPort; port++)
+            {
+                if (usedPorts.Contains(port)) continue;
+                if (_portChecker.IsPortInUse(port)) continue;
+                return port;
+            }
+
+            return startFrom;
         }
 
         public ValidationResult Validate(WebsiteConfig website)

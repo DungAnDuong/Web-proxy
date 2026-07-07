@@ -1,4 +1,3 @@
-J:\Project\Web proxy\WebServerManagement\WebServerManagement.Infrastructure\obj\Debug\WebServerManagement.Infrastructure.csprojAssemblyReference.cache
 J:\Project\Web proxy\WebServerManagement\WebServerManagement.Infrastructure\obj\Debug\WebServerManagement.Infrastructure.csproj.CoreCompileInputs.cache
 J:\Project\Web proxy\WebServerManagement\WebServerManagement.Infrastructure\bin\Debug\WebServerManagement.Infrastructure.dll
 J:\Project\Web proxy\WebServerManagement\WebServerManagement.Infrastructure\bin\Debug\WebServerManagement.Infrastructure.pdb
@@ -6,6 +5,7 @@ J:\Project\Web proxy\WebServerManagement\WebServerManagement.Infrastructure\bin\
 J:\Project\Web proxy\WebServerManagement\WebServerManagement.Infrastructure\bin\Debug\Newtonsoft.Json.dll
 J:\Project\Web proxy\WebServerManagement\WebServerManagement.Infrastructure\bin\Debug\WebServerManagement.Core.dll
 J:\Project\Web proxy\WebServerManagement\WebServerManagement.Infrastructure\bin\Debug\WebServerManagement.Core.pdb
-J:\Project\Web proxy\WebServerManagement\WebServerManagement.Infrastructure\obj\Debug\WebServerManagement.Infrastructure.csproj.CopyComplete
 J:\Project\Web proxy\WebServerManagement\WebServerManagement.Infrastructure\obj\Debug\WebServerManagement.Infrastructure.dll
 J:\Project\Web proxy\WebServerManagement\WebServerManagement.Infrastructure\obj\Debug\WebServerManagement.Infrastructure.pdb
+J:\Project\Web proxy\WebServerManagement\WebServerManagement.Infrastructure\obj\Debug\WebServerManagement.Infrastructure.csproj.AssemblyReference.cache
+J:\Project\Web proxy\WebServerManagement\WebServerManagement.Infrastructure\obj\Debug\WebServe.6E50DF50.Up2Date

@@ -18,8 +18,8 @@ J:\Project\Web proxy\WebServerManagement\WebServerManagement.Tests\bin\Debug\Web
 J:\Project\Web proxy\WebServerManagement\WebServerManagement.Tests\bin\Debug\WebServerManagement.Infrastructure.dll
 J:\Project\Web proxy\WebServerManagement\WebServerManagement.Tests\bin\Debug\WebServerManagement.Core.pdb
 J:\Project\Web proxy\WebServerManagement\WebServerManagement.Tests\bin\Debug\WebServerManagement.Infrastructure.pdb
-J:\Project\Web proxy\WebServerManagement\WebServerManagement.Tests\obj\Debug\WebServerManagement.Tests.csprojAssemblyReference.cache
 J:\Project\Web proxy\WebServerManagement\WebServerManagement.Tests\obj\Debug\WebServerManagement.Tests.csproj.CoreCompileInputs.cache
-J:\Project\Web proxy\WebServerManagement\WebServerManagement.Tests\obj\Debug\WebServerManagement.Tests.csproj.CopyComplete
 J:\Project\Web proxy\WebServerManagement\WebServerManagement.Tests\obj\Debug\WebServerManagement.Tests.dll
 J:\Project\Web proxy\WebServerManagement\WebServerManagement.Tests\obj\Debug\WebServerManagement.Tests.pdb
+J:\Project\Web proxy\WebServerManagement\WebServerManagement.Tests\obj\Debug\WebServerManagement.Tests.csproj.AssemblyReference.cache
+J:\Project\Web proxy\WebServerManagement\WebServerManagement.Tests\obj\Debug\WebServe.235F0ED0.Up2Date
